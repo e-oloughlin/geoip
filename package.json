@@ -1,0 +1,27 @@
+{
+  "name": "maxmind",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "maxmind": "^4.3.8",
+    "mmdb-lib": "^2.0.2",
+    "tiny-lru": "^9.0.3",
+    "typescript": "^4.9.4"
+  },
+  "type": "module",
+  "scripts": {
+    "go": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e-oloughlin/geoip.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/e-oloughlin/geoip/issues"
+  },
+  "homepage": "https://github.com/e-oloughlin/geoip#readme"
+}
