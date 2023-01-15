@@ -29,9 +29,8 @@ S3_SHA256="${S3L[0]}"
 # 3. Compare SHA Files and if different, download DB and upload to S3
 
 echo "-> Comparing maxmind to s3..."
-# if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
-	# echo "-> New update available. Downloading Maxmind's latest DB..."
-	echo "-> Pretending there's an update. Downloading Maxmind's latest DB..."
+if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
+	echo "-> New update available. Downloading Maxmind's latest DB..."
 	curl -o "$ARCHIVE_FILENAME" -L "$DB_URL"
 	tar -xvf "$ARCHIVE_FILENAME"
 
@@ -45,7 +44,7 @@ echo "-> Comparing maxmind to s3..."
 	cp "$MAXMIND_FOLDERNAME/GeoLite2-City.mmdb" ./GeoLite2-City.mmdb
 
 	echo "{database-updated}={true}" >> $GITHUB_OUTPUT
-# else
-# 	echo "-> No update available."
-# 	echo "{database-updated}={false}" >> $GITHUB_OUTPUT
-# fi
+else
+	echo "-> No update available."
+	echo "{database-updated}={false}" >> $GITHUB_OUTPUT
+fi
