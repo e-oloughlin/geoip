@@ -1,16 +1,16 @@
-name: 'Update GeoIP database'
+name: 'BETA: Update and deploy GeoIP database'
 
 on:
   workflow_dispatch:
   push:
     # paths:
-    #   - .github/workflows/update-geoip-database.yaml
+    #   - .github/**/*
   schedule:
     - cron: '0 3 * * *'
 
 jobs:
   check-for-geoip-update:
-    name: Check for DB update
+    name: Check for DB update - beta
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,17 @@ jobs:
 
       - name: Update GeoIP database
         id: update-db
-        uses: ./.github/actions/update-db
+        outputs:
+          database-updated: ${{ steps.update-db-beta.outputs.database-updated }}
+        uses: ./.github/actions/update-db-beta
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+
+      - name: Test result
+        id: test-result
+        run: echo "${{ steps.update-db.outputs.database-updated }}"
+
+      - name: Deploy image to ECR
+        id: deploy-image
+        if: steps.update-db.outputs.database-updated == 'true'
+        uses: ./.github/actions/deploy-image-beta

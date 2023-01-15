@@ -1,25 +1,23 @@
-import express from 'express';
 import maxmind from 'maxmind';
 
 const lookup = await maxmind.open('./GeoLite2-City.mmdb');
 
-const app = express();
+export const handler = (event) => {
+  const { ip } = event;
 
-app.get('/ip/:ip', async (req, res) => {
-	const { ip } = req.params;
-
-	if (!ip) {
-		return res.status(400).send('IP address is required');
+  if (!ip) {
+    return Promise.resolve({
+      status: 406,
+      message: 'IP address is required'
+    });
 	}
 
-	if (!maxmind.validate(ip)) {
-		return res.status(400).send('Invalid IP address');
+  if (!maxmind.validate(ip)) {
+    return Promise.resolve({
+      status: 404,
+      message: 'Invalid IP address'
+    });
 	}
 
-	const response = lookup.get(ip);
-	return res.json(response);
-});
-
-app.listen(3000, () => {
-	console.log('Server started on port 3000');
-});
+  return Promise.resolve(lookup.get(ip));
+}
