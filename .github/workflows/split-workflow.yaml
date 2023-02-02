@@ -1,0 +1,77 @@
+name: "Update and deploy GeoIP database"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - split-jobs
+    paths:
+      - .github/**/*
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  check-for-update:
+    name: Check for DB update
+    runs-on: ubuntu-latest
+    outputs:
+      update-available: ${{ steps.check-for-update.outputs.update-available }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Check for GeoIP update
+        id: check-for-update
+        uses: ./.github/actions/01-check-for-update
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+
+  perform-update:
+    name: Perform DB update
+    runs-on: ubuntu-latest
+    needs: check-for-update
+    if: ${{ always() }}
+    # if: needs.check-for-update.outputs.update-available == 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Perform GeoIP update
+        uses: ./.github/actions/02-perform-update
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+
+  build-and-deploy-image:
+    name: Build and deploy image
+    runs-on: ubuntu-latest
+    needs: perform-update
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build and deploy image
+        uses: ./.github/actions/03-build-deploy-image

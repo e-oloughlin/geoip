@@ -1,5 +1,10 @@
 name: 'Update DB'
 
+outputs:
+  database-updated:
+    description: "Whether the database was updated or not"
+    value: ${{ steps.update-db.outputs.database-updated }}
+
 runs:
   using: 'composite'
   steps:

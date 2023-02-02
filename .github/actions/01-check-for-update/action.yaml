@@ -1,0 +1,13 @@
+name: "Check for GeoIP update"
+
+outputs:
+  update-available:
+    description: "Whether or not a database update is available"
+    value: ${{ steps.check-for-update.outputs.update-available }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: check-for-update
+      shell: bash
+      run: ./.github/actions/01-check-for-update/check-for-update.sh

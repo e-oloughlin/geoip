@@ -1,16 +1,27 @@
-name: Basic Github Actions Workflow
+name: Test Github Actions Workflow
 
-on: push
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - beta
+    paths:
+      - .github/**/*
 
 jobs:
   job1:
     name: 'Set output'
     runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.set-output.outputs.name }}
 
     steps:
-      - name: Set output
-        shell: bash
-        run: echo "name=sharky" >> $GITHUB_OUTPUT
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - id: set-output
+        name: 'Run script'
+        uses: ./.github/actions/output
 
   job2:
     name: 'Read output'
@@ -19,4 +30,5 @@ jobs:
 
     steps:
       - name: Read output
-        run: echo "Output value: ${{ needs.job1.outputs.name }}"
+        shell: bash
+        run: echo ${{ needs.job1.outputs.name }}

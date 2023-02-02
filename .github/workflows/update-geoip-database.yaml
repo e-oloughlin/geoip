@@ -1,4 +1,4 @@
-name: 'Update and deploy GeoIP database'
+name: "Update and deploy GeoIP database"
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
     paths:
       - .github/**/*
   schedule:
-    - cron: '0 3 * * *'
+    - cron: "0 3 * * *"
 
 jobs:
   geoip-update:
@@ -39,11 +39,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: geoip-update
     steps:
-      - name: Test result
-        id: test-result
-        run: echo "${{ needs.geoip-update.outputs.database-updated }}"
+      - name: DB Update result
+        id: db-update-result
+        run: echo "DB update result - ${{ needs.geoip-update.outputs.database-updated }}"
 
-      # - name: Deploy image to ECR
-      #   id: deploy-image
-      #   if: steps.update-db.outputs.database-updated == true
+      - name: Test positive update
+        id: positive-update
+        if: needs.geoip-update.outputs.database-updated == true
+        shell: bash
+        run: echo "Woohoo - DB updated!"
+
+      - name: Test negative update
+        id: negative-update
+        if: needs.geoip-update.outputs.database-updated == false
+        shell: bash
+        run: echo "Nah no DB update available"
+
+      # - name: Update image
+      #   id: update-image
+      #   if: needs.geoip-update.outputs.database-updated == true
+      #   shell: bash
       #   uses: ./.github/actions/deploy-image

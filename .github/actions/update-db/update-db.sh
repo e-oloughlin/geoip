@@ -43,8 +43,8 @@ if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
 	echo "-> Copying new DB file to docker folder..."
 	cp "$MAXMIND_FOLDERNAME/GeoLite2-City.mmdb" ./GeoLite2-City.mmdb
 
-	echo "{database-updated}={true}" >> $GITHUB_OUTPUT
+	echo "database-updated=true" >> $GITHUB_OUTPUT
 else
 	echo "-> No update available."
-	echo "{database-updated}={false}" >> $GITHUB_OUTPUT
+	echo "database-updated=false" >> $GITHUB_OUTPUT
 fi
