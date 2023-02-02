@@ -3,8 +3,10 @@ name: 'Update and deploy GeoIP database'
 on:
   workflow_dispatch:
   push:
-    # paths:
-    #   - .github/**/*
+    branches:
+      - main
+    paths:
+      - .github/**/*
   schedule:
     - cron: '0 3 * * *'
 
