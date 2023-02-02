@@ -1,0 +1,22 @@
+name: Basic Github Actions Workflow
+
+on: push
+
+jobs:
+  job1:
+    name: 'Set output'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set output
+        shell: bash
+        run: echo "name=sharky" >> $GITHUB_OUTPUT
+
+  job2:
+    name: 'Read output'
+    runs-on: ubuntu-latest
+    needs: job1
+
+    steps:
+      - name: Read output
+        run: echo "Output value: ${{ needs.job1.outputs.name }}"
