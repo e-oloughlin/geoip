@@ -3,8 +3,10 @@ name: 'Update GeoIP database'
 on:
   workflow_dispatch:
   push:
-    # paths:
-    #   - .github/workflows/update-geoip-database.yaml
+    branches:
+      - main
+    paths:
+      - .github/**/*
   schedule:
     - cron: '0 3 * * *'
 

@@ -1,8 +1,0 @@
-name: 'Update DB Beta'
-
-runs:
-  using: 'composite'
-  steps:
-    - id: update-db
-      shell: bash
-      run: ./.github/actions/update-db/update-db-beta.sh
