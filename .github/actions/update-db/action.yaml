@@ -1,0 +1,8 @@
+name: 'Update DB'
+
+runs:
+  using: 'composite'
+  steps:
+    - id: update-db
+      shell: bash
+      run: ./.github/actions/update-db/update-db.sh

@@ -1,4 +1,4 @@
-name: 'BETA: Update and deploy GeoIP database'
+name: 'Update and deploy GeoIP database'
 
 on:
   workflow_dispatch:
@@ -10,10 +10,10 @@ on:
 
 jobs:
   geoip-update:
-    name: Check for DB update - beta
+    name: Check for DB update
     runs-on: ubuntu-latest
     outputs:
-      database-updated: ${{ steps.update-db-beta.outputs.database-updated }}
+      database-updated: ${{ steps.update-db.outputs.database-updated }}
 
     steps:
       - name: Checkout
@@ -27,13 +27,13 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Update GeoIP database
-        id: update-db-beta
-        uses: ./.github/actions/update-db-beta
+        id: update-db
+        uses: ./.github/actions/update-db
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
 
   deploy-image:
-    name: Deploy image to ECR - beta
+    name: Deploy image to ECR
     runs-on: ubuntu-latest
     needs: geoip-update
     steps:
@@ -44,4 +44,4 @@ jobs:
       # - name: Deploy image to ECR
       #   id: deploy-image
       #   if: steps.update-db.outputs.database-updated == true
-      #   uses: ./.github/actions/deploy-image-beta
+      #   uses: ./.github/actions/deploy-image

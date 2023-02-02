@@ -1,0 +1,8 @@
+name: 'Deploy image'
+
+runs:
+  using: 'composite'
+  steps:
+    - id: deploy-image
+      shell: bash
+      run: ./.github/actions/deploy-image/deploy-image.sh
