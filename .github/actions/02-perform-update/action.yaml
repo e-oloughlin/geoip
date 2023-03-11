@@ -1,8 +1,0 @@
-name: 'Perform update'
-
-runs:
-  using: 'composite'
-  steps:
-    - id: perform-update
-      shell: bash
-      run: ./.github/actions/02-perform-update/perform-update.sh

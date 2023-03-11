@@ -1,0 +1,16 @@
+name: 'Perform update'
+
+outputs:
+  cache-key:
+    description: "The cache key to use for the database artifact"
+    value: ${{ steps.download-update.outputs.cache-key }}
+  file-name:
+    description: "The file name to use when referencing the database file"
+    value: ${{ steps.download-update.outputs.file-name }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: download-update
+      shell: bash
+      run: ./.github/actions/02-download-update/download-update.sh

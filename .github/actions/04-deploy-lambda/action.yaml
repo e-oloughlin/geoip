@@ -1,0 +1,14 @@
+name: 'Deploy Lambda'
+
+inputs:
+  image-uri:
+    description: 'The URI of the image to deploy'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - id: deploy-lambda
+      shell: bash
+      run: echo ${{ inputs.image-uri }}
+      # run: ./.github/actions/04-deploy-lambda/deploy-lambda.sh

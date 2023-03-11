@@ -8,6 +8,9 @@ SHA256_URL="https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-
 echo "-> Downloading Maxmind's latest DB SHA..."
 curl -o "$SHA_FILENAME" -L "$SHA256_URL"
 
+echo "Maxmind's latest SHA: "
+cat $SHA_FILENAME
+
 IFS=' ' read -r -a ML <<< $(cat $SHA_FILENAME)
 
 MAXMIND_SHA256="${ML[0]}"
@@ -23,15 +26,17 @@ S3_SHA256="${S3L[0]}"
 # 3. Compare SHA Files and if different, mark as update available
 # 	 and upload new SHA file to S3
 
-echo "-> Comparing maxmind to s3..."
-if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
-	echo "-> New update available."
+echo "update-available=true" >> $GITHUB_OUTPUT
 
-	echo "-> Uploading new SHA file to S3..."
-	aws s3 cp "$SHA_FILENAME" s3://siorc/ip/$SHA_FILENAME
+# echo "-> Comparing maxmind to s3..."
+# if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
+# 	echo "-> New update available."
 
-	echo "{update-available}={true}" >> $GITHUB_OUTPUT
-else
-	echo "-> No update available."
-	echo "{update-available}={false}" >> $GITHUB_OUTPUT
-fi
+# 	echo "-> Uploading new SHA file to S3..."
+# 	aws s3 cp "$SHA_FILENAME" s3://siorc/ip/$SHA_FILENAME
+
+# 	echo "update-available=true" >> $GITHUB_OUTPUT
+# else
+# 	echo "-> No update available."
+# 	echo "update-available=false" >> $GITHUB_OUTPUT
+# fi

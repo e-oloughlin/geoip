@@ -1,0 +1,24 @@
+name: 'Build image and push to ECR'
+
+inputs:
+  aws-account-id:
+    description: 'The AWS account ID to use'
+    required: true
+  aws-region:
+    description: 'The AWS region to use'
+    required: true
+  repository-name:
+    description: 'The name of the ECR repository to push the image to'
+    required: true
+
+outputs:
+  image-uri:
+    description: 'The image URI of the image that was built and pushed to ECR'
+    value: ${{ steps.build-push-image-ecr.outputs.image-uri }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: build-push-image-ecr
+      shell: bash
+      run: ./.github/actions/03-build-push-image-ecr/build-push-image-ecr.sh

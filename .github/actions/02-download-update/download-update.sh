@@ -2,9 +2,9 @@
 
 SHA_FILENAME="geoIP.tar.gz.sha256"
 ARCHIVE_FILENAME="geoIP.tar.gz"
+DB_FILE_NAME="GeoLite2-City.mmdb"
 
 DB_URL="https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=$MAXMIND_LICENSE_KEY&suffix=tar.gz"
-SHA256_URL="https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=$MAXMIND_LICENSE_KEY&suffix=tar.gz.sha256"
 
 # Download SHA File from S3
 echo "-> Downloading S3's latest DB SHA..."
@@ -21,14 +21,13 @@ MAXMIND_FOLDERNAME="${MAXMIND_FN[0]}"
 # Download the maxmind DB archive
 echo "-> Downloading Maxminds's latest DB archive..."
 curl -o "$ARCHIVE_FILENAME" -L "$DB_URL"
+
 # Extract the archive
 echo "-> Extracting archive..."
 tar -xvf "$ARCHIVE_FILENAME"
 
-# Upload DB to S3
-echo "-> Uploading DB file to S3..."
-aws s3 cp "$MAXMIND_FOLDERNAME/GeoLite2-City.mmdb" s3://siorc/ip/GeoLite2-City.mmdb
+mv "$MAXMIND_FOLDERNAME/$DB_FILE_NAME" ./
 
-# Copy DB to docker folder
-echo "-> Copying new DB file to docker folder..."
-cp "$MAXMIND_FOLDERNAME/GeoLite2-City.mmdb" ./GeoLite2-City.mmdb
+# Define step outputs
+echo "cache-key=$MAXMIND_FOLDERNAME" >> $GITHUB_OUTPUT
+echo "file-name=$DB_FILE_NAME" >> $GITHUB_OUTPUT

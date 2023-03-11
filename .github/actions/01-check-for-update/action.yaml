@@ -1,4 +1,4 @@
-name: "Check for GeoIP update"
+name: "Check for Maxmind GeoIP update"
 
 outputs:
   update-available:
