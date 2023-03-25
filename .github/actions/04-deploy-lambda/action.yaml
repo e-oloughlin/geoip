@@ -10,5 +10,4 @@ runs:
   steps:
     - id: deploy-lambda
       shell: bash
-      run: echo ${{ inputs.image-uri }}
-      # run: ./.github/actions/04-deploy-lambda/deploy-lambda.sh
+      run: ./.github/actions/04-deploy-lambda/deploy-lambda.sh

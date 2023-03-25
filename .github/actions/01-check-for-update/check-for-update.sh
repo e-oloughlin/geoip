@@ -26,17 +26,15 @@ S3_SHA256="${S3L[0]}"
 # 3. Compare SHA Files and if different, mark as update available
 # 	 and upload new SHA file to S3
 
-echo "update-available=true" >> $GITHUB_OUTPUT
+echo "-> Comparing maxmind to s3..."
+if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
+	echo "-> New update available."
 
-# echo "-> Comparing maxmind to s3..."
-# if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
-# 	echo "-> New update available."
+	echo "-> Uploading new SHA file to S3..."
+	aws s3 cp "$SHA_FILENAME" s3://siorc/ip/$SHA_FILENAME
 
-# 	echo "-> Uploading new SHA file to S3..."
-# 	aws s3 cp "$SHA_FILENAME" s3://siorc/ip/$SHA_FILENAME
-
-# 	echo "update-available=true" >> $GITHUB_OUTPUT
-# else
-# 	echo "-> No update available."
-# 	echo "update-available=false" >> $GITHUB_OUTPUT
-# fi
+	echo "update-available=true" >> $GITHUB_OUTPUT
+else
+	echo "-> No update available."
+	echo "update-available=false" >> $GITHUB_OUTPUT
+fi
