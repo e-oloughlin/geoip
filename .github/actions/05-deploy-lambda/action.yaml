@@ -1,0 +1,8 @@
+name: "Deploy Lambda"
+
+runs:
+  using: "composite"
+  steps:
+    - id: deploy-lambda
+      shell: bash
+      run: ./.github/actions/05-deploy-lambda/deploy-lambda.sh

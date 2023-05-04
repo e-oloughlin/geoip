@@ -1,0 +1,13 @@
+name: "Deploy Lambda"
+
+outputs:
+  iam-role-arn:
+    description: "The ARN of the IAM role that was created"
+    value: ${{ steps.create-iam-role.outputs.iam-role-arn }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: create-iam-role
+      shell: bash
+      run: ./.github/actions/04-create-iam-role/create-iam-role.sh

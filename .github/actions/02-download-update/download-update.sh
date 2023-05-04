@@ -29,5 +29,10 @@ tar -xvf "$ARCHIVE_FILENAME"
 mv "$MAXMIND_FOLDERNAME/$DB_FILE_NAME" ./
 
 # Define step outputs
+
+# The key which is used to cache the DB file under
 echo "cache-key=$MAXMIND_FOLDERNAME" >> $GITHUB_OUTPUT
+
+# The path to the DB file, in this case just the file name
+# as it is in the root of the repo
 echo "file-name=$DB_FILE_NAME" >> $GITHUB_OUTPUT

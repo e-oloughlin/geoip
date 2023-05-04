@@ -34,7 +34,9 @@ if [ "$MAXMIND_SHA256" != "$S3_SHA256" ]; then
 	aws s3 cp "$SHA_FILENAME" s3://siorc/ip/$SHA_FILENAME
 
 	echo "update-available=true" >> $GITHUB_OUTPUT
+	echo ":white_check_mark: Maxmind update available" >> $GITHUB_STEP_SUMMARY
 else
 	echo "-> No update available."
 	echo "update-available=false" >> $GITHUB_OUTPUT
+	echo ":x: No maxmind update available" >> $GITHUB_STEP_SUMMARY
 fi

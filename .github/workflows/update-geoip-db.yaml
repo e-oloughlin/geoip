@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -45,10 +45,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -61,7 +61,7 @@ jobs:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
 
       - name: Cache DB file
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ steps.download-update.outputs.cache-key }}
           path: ${{ steps.download-update.outputs.file-name }}
@@ -73,17 +73,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Retrieve DB file from cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: ${{ needs.download-update.outputs.cache-key }}
           path: ${{ needs.download-update.outputs.file-name }}
@@ -96,26 +96,46 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           REPOSITORY_NAME: ${{ vars.REPOSITORY_NAME }}
 
-      - name: Echo output from previous job
-        run: |
-          echo ${{ needs.download-update.outputs.file-name }}
-          echo ${{ needs.download-update.outputs.cache-key }}
-
-  deploy-lambda:
-    name: Deploy Lambda
+  create-iam-role:
+    name: Create IAM Role
     runs-on: ubuntu-latest
     needs: build-and-push-image
+    outputs:
+      iam-role-arn: ${{ steps.create-iam-role.outputs.iam-role-arn }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # - name: Deploy Lambda
-      #   uses: ./.github/actions/04-deploy-lambda
+      - name: Create IAM role
+        id: create-iam-role
+        uses: ./.github/actions/04-create-iam-role
+
+  deploy-lambda:
+    name: Deploy Lambda
+    runs-on: ubuntu-latest
+    needs: create-iam-role
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy Lambda
+        uses: ./.github/actions/05-deploy-lambda
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          REPOSITORY_NAME: ${{ vars.REPOSITORY_NAME }}
